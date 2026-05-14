@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedRoute, { RoleRoute } from '@/components/common/ProtectedRoute';
+import ProtectedRoute, { RoleRoute, getRoleHome } from '@/components/common/ProtectedRoute';
 import MainLayout from '@/components/layout/MainLayout';
 import Loader from '@/components/common/Loader';
 
@@ -70,7 +70,24 @@ const FacultyStudents = React.lazy(() => import('@/pages/faculty/FacultyStudents
 const FacultyNotifications = React.lazy(() => import('@/pages/faculty/FacultyNotifications'));
 const FacultyProfile = React.lazy(() => import('@/pages/faculty/FacultyProfile'));
 const AssignmentManager = React.lazy(() => import('@/pages/faculty/AssignmentManager'));
-const StudyMaterialsPage = React.lazy(() => import('@/pages/faculty/StudyMaterials'));
+const MarksEntryPage = React.lazy(() => import('@/pages/exams/MarksEntry'));
+// ─── Placeholder pages (temporarily disabled features) ────
+const ComingSoonPage = (title) => React.lazy(() =>
+  Promise.resolve({
+    default: () => (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', minHeight: '60vh', gap: 16,
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        <div style={{ fontSize: 56 }}>🚧</div>
+        <h2 style={{ margin: 0, color: '#1B3A5C' }}>{title}</h2>
+        <p style={{ color: '#64748B', margin: 0 }}>This module is under development and will be available soon.</p>
+      </div>
+    ),
+  })
+);
+const StudyMaterialsPage = ComingSoonPage('Study Materials — Temporarily Disabled');
 
 // ─── Role constants ─────────────────────────────────────────
 /** Setup pages: super_admin + admin only */
@@ -94,9 +111,7 @@ const PARENT_ROLES  = ['parent'];
  */
 const RoleRedirect = () => {
   const user = JSON.parse(localStorage.getItem('vms_user') || 'null');
-  if (user?.role === 'parent')  return <Navigate to="/parent/dashboard" replace />;
-  if (user?.role === 'faculty') return <Navigate to="/faculty-app/attendance" replace />;
-  return <Navigate to="/" replace />;
+  return <Navigate to={getRoleHome(user?.role)} replace />;
 };
 
 const AppRouter = () => (
@@ -107,11 +122,14 @@ const AppRouter = () => (
         {/* ── Public ─────────────────────────────────────── */}
         <Route path="/login"             element={<LoginPage />} />
         <Route path="/parent-login"      element={<ParentLoginPage />} />
+        <Route path="/parent/login"      element={<ParentLoginPage />} />
         <Route path="/faculty-login"     element={<FacultyLoginPage />} />
+        <Route path="/faculty/login"     element={<FacultyLoginPage />} />
         <Route path="/online-admission"  element={<OnlineAdmissionPage />} />
         <Route path="/admission-status"  element={<ApplicationStatusPage />} />
 
         {/* ── Parent Mobile App ──────────────────────────── */}
+        {/* Safety: non-parent users hitting /parent/* get redirected to login */}
         <Route path="/parent/*" element={
           <ProtectedRoute>
             <RoleRoute roles={[...PARENT_ROLES, ...HIGH_PRIV]}>
@@ -137,12 +155,14 @@ const AppRouter = () => (
           <ProtectedRoute>
             <RoleRoute roles={FACULTY_ROLES}>
               <Routes>
-                <Route index element={<Navigate to="attendance" replace />} />
+                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route path="dashboard"    element={<FacultyAttendance />} />
                 <Route path="attendance"   element={<FacultyAttendance />} />
                 <Route path="students"     element={<FacultyStudents />} />
                 <Route path="notifications" element={<FacultyNotifications />} />
                 <Route path="profile"      element={<FacultyProfile />} />
                 <Route path="assignments"  element={<AssignmentManager />} />
+                <Route path="marks"        element={<MarksEntryPage />} />
                 <Route path="materials"    element={<StudyMaterialsPage />} />
               </Routes>
             </RoleRoute>
@@ -153,7 +173,8 @@ const AppRouter = () => (
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
 
           {/* Dashboard — all desktop roles */}
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/" element={<RoleRedirect />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
 
           {/* Students — viewable by all desktop roles incl. accountant */}
           <Route path="/students"
@@ -182,6 +203,9 @@ const AppRouter = () => (
             element={<RoleRoute roles={STAFF_ROLES}><CommunicationPage /></RoleRoute>} />
           <Route path="/assignments"
             element={<RoleRoute roles={STAFF_ROLES}><AssignmentManager /></RoleRoute>} />
+          <Route path="/marks-entry"
+            element={<RoleRoute roles={STAFF_ROLES}><MarksEntryPage /></RoleRoute>} />
+          {/* Study Materials: temporarily disabled — shows Coming Soon */}
           <Route path="/materials"
             element={<RoleRoute roles={STAFF_ROLES}><StudyMaterialsPage /></RoleRoute>} />
           <Route path="/hostel"

@@ -140,20 +140,7 @@ const FeeInvoiceDetail = ({ invoiceId, onClose, onPaymentRecorded }) => {
   };
 
   const handleDownloadPDF = () => {
-    const url = feesAPI.getInvoicePdfUrl(invoiceId);
-    const token = localStorage.getItem('vms_token');
-    // Create a temporary anchor with auth header isn't possible — open in new tab
-    // For authenticated PDF downloads, we use fetch + blob
-    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.blob())
-      .then(blob => {
-        const a = document.createElement('a');
-        a.href  = URL.createObjectURL(blob);
-        a.download = `Invoice_${invoice?.invoiceNumber || invoiceId}.pdf`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-      })
-      .catch(() => message.error('PDF download failed'));
+    window.open(feesAPI.getInvoicePdfUrlWithToken(invoiceId), '_blank', 'noopener');
   };
 
   if (loading) return <div style={{ textAlign: 'center', padding: 40 }}><Spin size="large" /></div>;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ParentLayout from '@/components/mobile/ParentLayout';
-import { feesAPI, notificationAPI, studentAPI, materialAPI } from '@/services/api';
+import { feesAPI, notificationAPI, studentAPI, materialAPI, hostelAPI } from '@/services/api';
 import useAuthStore from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -17,6 +17,7 @@ const ParentDashboard = () => {
   const [feeData, setFeeData] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [materials, setMaterials] = useState([]);
+  const [hostelInfo, setHostelInfo] = useState(undefined); // undefined=loading, null=not allocated
   const [retryCount, setRetryCount] = useState(0);
   // Multi-child support
   const [linkedStudents, setLinkedStudents] = useState([]);
@@ -61,10 +62,11 @@ const ParentDashboard = () => {
         if (cid) setClassId(cid);
 
         // ── Step 2: parallel fetch ─────────────────────────
-        const [fees, notifs, mats] = await Promise.allSettled([
+        const [fees, notifs, mats, hostel] = await Promise.allSettled([
           sid ? feesAPI.getStudentFees(sid) : Promise.resolve(null),
           notificationAPI.getAll({ limit: 3 }),
           cid ? materialAPI.getByClass(cid) : Promise.resolve(null),
+          sid ? hostelAPI.getMyHostelInfo(sid) : Promise.resolve(null),
         ]);
 
         if (cancelled) return;
@@ -82,6 +84,14 @@ const ParentDashboard = () => {
           const payload = envelope?.data ?? envelope;
           const list = payload?.materials ?? (Array.isArray(payload) ? payload : []);
           setMaterials(list.filter(Boolean).slice(0, 8));
+        }
+
+        if (hostel.status === 'fulfilled') {
+          // hostel.value may be null (not allocated) or an object with allocation info
+          const h = hostel.value?.data ?? hostel.value;
+          setHostelInfo(h ?? null);
+        } else {
+          setHostelInfo(null); // error - treat as not allocated
         }
       } catch (e) {
         if (!cancelled) setError(e.message || 'Failed to load dashboard.');
@@ -264,6 +274,47 @@ const ParentDashboard = () => {
               </button>
             ))}
           </div>
+
+          {/* Hostel Info */}
+          {hostelInfo !== undefined && studentId && (
+            <>
+              <div className="m-section-header">
+                <span className="m-section-title">🏠 Hostel Info</span>
+              </div>
+              {hostelInfo && hostelInfo.allocated ? (
+                <div className="m-card" style={{ borderLeft: '3px solid #2563EB', marginBottom: 10 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 2 }}>Hostel / Block</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{hostelInfo.hostelName}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 2 }}>Room Number</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{hostelInfo.roomNumber}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 2 }}>Bed Number</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Bed {hostelInfo.bedNumber}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 2 }}>Status</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#16A34A' }}>{hostelInfo.status || 'Active'}</div>
+                    </div>
+                    {hostelInfo.floor && (
+                      <div>
+                        <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 2 }}>Floor</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{hostelInfo.floor}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="m-card" style={{ textAlign: 'center', color: '#94A3B8', fontSize: 13, padding: '14px 0' }}>
+                  Student is not assigned to hostel
+                </div>
+              )}
+            </>
+          )}
 
           {/* Study Materials */}
           {classId && (

@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Card, Form, Input, Button, Typography, Space, Alert,
-  Steps, Divider,
+  Steps, Divider, Modal,
 } from 'antd';
 import {
   MobileOutlined, SafetyCertificateOutlined,
@@ -25,6 +25,21 @@ const ParentLogin = () => {
   const [resendCd, setResendCd] = useState(0); // countdown seconds
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const otpRefs = useRef([]);
+
+  // ─── Demo popup (once per session) ─────────────────────────
+  useEffect(() => {
+    const key = 'vms_otp_demo_shown_parent';
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, '1');
+      Modal.info({
+        title: 'Demo mode enabled',
+        content: 'Demo mode enabled. Use test OTP: 123456',
+        okText: 'Got it',
+        centered: true,
+      });
+    }
+  }, []);
+
 
   // ─── OTP input handling ─────────────────────────────────
   const handleOtpChange = (index, value) => {
@@ -53,6 +68,12 @@ const ParentLogin = () => {
     setError('');
     setLoading(true);
     try {
+      Modal.info({
+        title: 'Demo mode enabled',
+        content: 'Demo mode enabled. Use test OTP: 123456',
+        okText: 'Got it',
+        centered: true,
+      });
       await authAPI.sendOtp(digits);
       setStep(1);
       startCountdown();
@@ -99,6 +120,12 @@ const ParentLogin = () => {
     setOtp(['', '', '', '', '', '']);
     setLoading(true);
     try {
+      Modal.info({
+        title: 'Demo mode enabled',
+        content: 'Demo mode enabled. Use test OTP: 123456',
+        okText: 'Got it',
+        centered: true,
+      });
       await authAPI.sendOtp(phone.replace(/\D/g, ''));
       startCountdown();
     } catch (e) {

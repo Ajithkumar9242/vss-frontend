@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Card, Form, Input, Button, Typography, Alert,
-  Steps, Divider,
+  Steps, Divider, Modal,
 } from 'antd';
 import {
   UserOutlined, SafetyCertificateOutlined,
@@ -32,6 +32,21 @@ const FacultyLogin = () => {
 
   const otpValue = otp.join('');
 
+  // ─── Demo popup (once per session) ─────────────────────────
+  useEffect(() => {
+    const key = 'vms_otp_demo_shown_faculty';
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, '1');
+      Modal.info({
+        title: 'Demo mode enabled',
+        content: 'Demo mode enabled. Use test OTP: 123456',
+        okText: 'Got it',
+        centered: true,
+      });
+    }
+  }, []);
+
+
   const handleOtpChange = (index, value) => {
     if (!/^\d?$/.test(value)) return;
     const next = [...otp];
@@ -54,7 +69,12 @@ const FacultyLogin = () => {
     setError('');
     setLoading(true);
     try {
-      // Faculty-specific OTP endpoint
+      Modal.info({
+        title: 'Demo mode enabled',
+        content: 'Demo mode enabled. Use test OTP: 123456',
+        okText: 'Got it',
+        centered: true,
+      });
       await authAPI.sendFacultyOtp(digits);
       setStep(1);
       startCountdown();
@@ -78,8 +98,8 @@ const FacultyLogin = () => {
       setAuth(data.user, token);
       if (data.refreshToken) localStorage.setItem('vms_refresh_token', data.refreshToken);
 
-      // Redirect to faculty dashboard
-      navigate('/dashboard', { replace: true });
+      // Redirect to faculty app
+      navigate('/faculty-app/dashboard', { replace: true });
     } catch (e) {
       setError(e.response?.data?.message || e.message || 'Invalid OTP');
       setOtp(['', '', '', '', '', '']);
@@ -95,6 +115,12 @@ const FacultyLogin = () => {
     setOtp(['', '', '', '', '', '']);
     setLoading(true);
     try {
+      Modal.info({
+        title: 'Demo mode enabled',
+        content: 'Demo mode enabled. Use test OTP: 123456',
+        okText: 'Got it',
+        centered: true,
+      });
       await authAPI.sendFacultyOtp(phone.replace(/\D/g, ''));
       startCountdown();
     } catch (e) {

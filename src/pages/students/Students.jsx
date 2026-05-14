@@ -18,9 +18,9 @@ const { Title, Text } = Typography;
 
 const Students = () => {
   const { message } = App.useApp();
-  const userRole  = useAuthStore((s) => s.user?.role);
+  const userRole = useAuthStore((s) => s.user?.role);
   // Accountant is read-only — cannot add/edit/delete students
-  const canWrite  = !['accountant'].includes(userRole);
+  const canWrite = !['accountant'].includes(userRole);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState([]);
@@ -43,7 +43,7 @@ const Students = () => {
     setLoading(true);
     try {
       const params = { page, limit: pageSize };
-      if (filters.search)  params.search  = filters.search;
+      if (filters.search) params.search = filters.search;
       if (filters.classId) params.classId = filters.classId;
 
       const res = await studentAPI.getAll(params);
@@ -55,18 +55,18 @@ const Students = () => {
       //   res.data.students = legacy shape (fallback)
       const envelope = res?.data ?? {};
       const list =
-        (Array.isArray(envelope?.data)     ? envelope.data     : null) ??
+        (Array.isArray(envelope?.data) ? envelope.data : null) ??
         (Array.isArray(envelope?.students) ? envelope.students : null) ??
-        (Array.isArray(envelope)           ? envelope          : null) ??
+        (Array.isArray(envelope) ? envelope : null) ??
         [];
 
       setStudents(list);
 
       const pag = envelope?.pagination ?? {};
       setPagination({
-        current:  pag.page  ?? page,
+        current: pag.page ?? page,
         pageSize: pag.limit ?? pageSize,
-        total:    pag.total ?? list.length,
+        total: pag.total ?? list.length,
       });
     } catch (err) {
       message.error(err.message || 'Failed to load students');
@@ -84,14 +84,20 @@ const Students = () => {
         const envelope = res?.data ?? {};
         const list = Array.isArray(envelope?.data) ? envelope.data
           : Array.isArray(envelope) ? envelope
-          : [];
+            : [];
         setClasses(list);
       });
 
     schoolAPI.getSections()
       .then((res) => {
-        const list = res?.data || res || [];
-        setSections(Array.isArray(list) ? list : []);
+        const envelope = res?.data ?? {};
+
+        const list =
+          Array.isArray(envelope?.data) ? envelope.data :
+            Array.isArray(envelope) ? envelope :
+              [];
+
+        setSections(list);
       });
   }, []);
   useEffect(() => {
@@ -149,7 +155,7 @@ const Students = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Avatar
             size={32}
-            src={s.avatar || null}
+            src={s.avatar || s.photo || s.profilePhoto || null}
             style={{ background: '#3B82F6', flexShrink: 0, fontSize: 13, fontWeight: 600 }}
           >
             {(s.name || '?')[0].toUpperCase()}
@@ -257,12 +263,12 @@ const Students = () => {
         rowKey="_id"
         loading={loading}
         pagination={{
-          current:       pagination.current,
-          pageSize:      pagination.pageSize,
-          total:         pagination.total,
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50', '100'],
-          showTotal:     (total) => `Total ${total} students`,
+          showTotal: (total) => `Total ${total} students`,
         }}
         onChange={handleTableChange}
         scroll={{ x: 1100 }}
@@ -275,104 +281,104 @@ const Students = () => {
 
       {/* New Student Modal — write roles only */}
       {canWrite && (
-      <Modal
-        title="Add New Student"
-        open={modal}
-        onCancel={() => { setModal(false); form.resetFields(); setAvatarUrl(null); setModalClassId(null); setFilteredSections([]); }}
-        footer={null}
-        width={560}
-        destroyOnHidden
-      >
-        <Form form={form} layout="vertical" onFinish={onFinish} style={{ marginTop: 16 }}>
-          {/* Profile photo */}
-          <Form.Item label="Profile Photo">
-            <FileUpload
-              folder="students"
-              accept="image/*"
-              value={avatarUrl}
-              onChange={setAvatarUrl}
-              onUploading={setUploading}
-              label="Upload Photo"
-            />
-          </Form.Item>
-          <Row gutter={12}>
-            <Col span={14}>
-              <Form.Item label="Full Name" name="name" rules={[{ required: true }]}>
-                <Input placeholder="Student full name" />
-              </Form.Item>
-            </Col>
-            <Col span={10}>
-              <Form.Item label="Gender" name="gender" rules={[{ required: true }]}>
-                <Select>
-                  <Select.Option value="male">Male</Select.Option>
-                  <Select.Option value="female">Female</Select.Option>
-                  <Select.Option value="other">Other</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+        <Modal
+          title="Add New Student"
+          open={modal}
+          onCancel={() => { setModal(false); form.resetFields(); setAvatarUrl(null); setModalClassId(null); setFilteredSections([]); }}
+          footer={null}
+          width={560}
+          destroyOnHidden
+        >
+          <Form form={form} layout="vertical" onFinish={onFinish} style={{ marginTop: 16 }}>
+            {/* Profile photo */}
+            <Form.Item label="Profile Photo">
+              <FileUpload
+                folder="students"
+                accept="image/*"
+                value={avatarUrl}
+                onChange={setAvatarUrl}
+                onUploading={setUploading}
+                label="Upload Photo"
+              />
+            </Form.Item>
+            <Row gutter={12}>
+              <Col span={14}>
+                <Form.Item label="Full Name" name="name" rules={[{ required: true }]}>
+                  <Input placeholder="Student full name" />
+                </Form.Item>
+              </Col>
+              <Col span={10}>
+                <Form.Item label="Gender" name="gender" rules={[{ required: true }]}>
+                  <Select>
+                    <Select.Option value="male">Male</Select.Option>
+                    <Select.Option value="female">Female</Select.Option>
+                    <Select.Option value="other">Other</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Row gutter={12}>
-            <Col span={12}>
-              <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true }]}>
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Blood Group" name="bloodGroup">
-                <Input placeholder="e.g. A+" />
-              </Form.Item>
-            </Col>
-          </Row>
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true }]}>
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Blood Group" name="bloodGroup">
+                  <Input placeholder="e.g. A+" />
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Row gutter={12}>
-            <Col span={12}>
-              <Form.Item label="Class" name="classId" rules={[{ required: true }]}>
-                <Select
-                  placeholder="Select class"
-                  onChange={handleModalClassChange}
-                  options={classes.map((c) => ({ label: c.name, value: c._id }))}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Section" name="sectionId">
-                <Select
-                  placeholder="Select section"
-                  allowClear
-                  disabled={!modalClassId}
-                  options={filteredSections.map((s) => ({ label: s.name, value: s._id }))}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item label="Class" name="classId" rules={[{ required: true }]}>
+                  <Select
+                    placeholder="Select class"
+                    onChange={handleModalClassChange}
+                    options={classes.map((c) => ({ label: c.name, value: c._id }))}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Section" name="sectionId">
+                  <Select
+                    placeholder="Select section"
+                    allowClear
+                    disabled={!modalClassId}
+                    options={filteredSections.map((s) => ({ label: s.name, value: s._id }))}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Form.Item label="Parent / Guardian Name" name="parentName" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Row gutter={12}>
-            <Col span={12}>
-              <Form.Item label="Parent Phone" name="parentPhone" rules={[{ required: true }]}>
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Parent Email" name="parentEmail" rules={[{ type: 'email', message: 'Invalid email' }]}>
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item label="Address" name="address">
-            <Input.TextArea rows={2} />
-          </Form.Item>
+            <Form.Item label="Parent / Guardian Name" name="parentName" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item label="Parent Phone" name="parentPhone" rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Parent Email" name="parentEmail" rules={[{ type: 'email', message: 'Invalid email' }]}>
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Form.Item label="Address" name="address">
+              <Input.TextArea rows={2} />
+            </Form.Item>
 
-          <Form.Item style={{ marginBottom: 0 }}>
-            <Button type="primary" htmlType="submit" loading={saving} disabled={uploading} block>
-              {uploading ? 'Uploading...' : 'Create Student'}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Button type="primary" htmlType="submit" loading={saving} disabled={uploading} block>
+                {uploading ? 'Uploading...' : 'Create Student'}
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
       )} {/* end canWrite */}
 
       {/* Student Profile Drawer */}
@@ -454,9 +460,9 @@ const StudentProfileDrawer = ({ student, open, onClose }) => {
         <>
           {/* Avatar */}
           <div style={{ textAlign: 'center', marginBottom: 16 }}>
-            {student.avatar ? (
+            {(student.avatar || student.photo || student.profilePhoto) ? (
               <img
-                src={student.avatar}
+                src={student.avatar || student.photo || student.profilePhoto}
                 alt={student.name}
                 style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #E2E8F0' }}
               />

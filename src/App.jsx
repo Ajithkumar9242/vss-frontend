@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ConfigProvider, App as AntApp } from 'antd';
 import AppRouter from '@/router';
+import useAuthStore from '@/store/authStore';
 
 // Enterprise-grade Ant Design theme
 const theme = {
@@ -33,6 +34,13 @@ const theme = {
 };
 
 const App = () => {
+  const token = useAuthStore((s) => s.token);
+  const fetchMe = useAuthStore((s) => s.fetchMe);
+
+  useEffect(() => {
+    if (token) fetchMe();
+  }, [token, fetchMe]);
+
   return (
     <ConfigProvider theme={theme}>
       <AntApp>
