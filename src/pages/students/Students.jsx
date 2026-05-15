@@ -156,18 +156,30 @@ const Students = () => {
           <Avatar
             size={32}
             src={s.avatar || s.photo || s.profilePhoto || null}
-            style={{ background: '#3B82F6', flexShrink: 0, fontSize: 13, fontWeight: 600 }}
+            style={{ background: 'var(--color-secondary)', flexShrink: 0, fontSize: 13, fontWeight: 600 }}
           >
-            {(s.name || '?')[0].toUpperCase()}
+            {(s.name || '—')[0].toUpperCase()}
           </Avatar>
           <div style={{ minWidth: 0 }}>
             <Text strong ellipsis style={{ display: 'block', maxWidth: 140 }}>{s.name || '—'}</Text>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {s.rollNo || s.admissionNumber || '—'}
+              {s.admissionNo || s.admissionNumber || s.rollNo || '—'}
             </Text>
           </div>
         </div>
       ),
+    },
+    {
+      title: 'Admission No',
+      key: 'admissionNo',
+      width: 130,
+      render: (_, s) => s.admissionNo || s.admissionNumber || '—',
+    },
+    {
+      title: 'Register No',
+      key: 'registerNo',
+      width: 130,
+      render: (_, s) => s.registerNo || s.rollNo || '—',
     },
     {
       title: 'Class',
@@ -333,6 +345,19 @@ const Students = () => {
 
             <Row gutter={12}>
               <Col span={12}>
+                <Form.Item label="Admission No" name="admissionNo">
+                  <Input placeholder="Optional; auto if empty" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Register No" name="registerNo">
+                  <Input placeholder="Optional; auto if empty" />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={12}>
+              <Col span={12}>
                 <Form.Item label="Class" name="classId" rules={[{ required: true }]}>
                   <Select
                     placeholder="Select class"
@@ -467,11 +492,13 @@ const StudentProfileDrawer = ({ student, open, onClose }) => {
                 style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #E2E8F0' }}
               />
             ) : (
-              <Avatar size={80} icon={<UserOutlined />} style={{ background: '#1B3A5C', fontSize: 32 }} />
+              <Avatar size={80} icon={<UserOutlined />} style={{ background: 'var(--color-primary-dark)', fontSize: 32 }} />
             )}
             <div style={{ marginTop: 6, fontWeight: 600 }}>{student.name}</div>
           </div>
           <Descriptions column={1} size="small" bordered>
+            <Descriptions.Item label="Admission No">{student.admissionNo || student.admissionNumber || '—'}</Descriptions.Item>
+            <Descriptions.Item label="Register No">{student.registerNo || '—'}</Descriptions.Item>
             <Descriptions.Item label="Roll No">{student.rollNo || '—'}</Descriptions.Item>
             <Descriptions.Item label="Class">{student.classId?.name || '—'}</Descriptions.Item>
             <Descriptions.Item label="Section">{student.sectionId?.name || '—'}</Descriptions.Item>
@@ -493,7 +520,7 @@ const StudentProfileDrawer = ({ student, open, onClose }) => {
         <>
           <Row gutter={12} style={{ marginBottom: 16 }}>
             {[
-              { label: 'Total Fee', value: `₹${(feeSummary?.totalFee || 0).toLocaleString('en-IN')}`, color: '#1B3A5C' },
+              { label: 'Total Fee', value: `₹${(feeSummary?.totalFee || 0).toLocaleString('en-IN')}`, color: 'var(--color-primary-dark)' },
               { label: 'Paid', value: `₹${(feeSummary?.totalPaid || 0).toLocaleString('en-IN')}`, color: '#22C55E' },
               { label: 'Due', value: `₹${(feeSummary?.totalDue || 0).toLocaleString('en-IN')}`, color: '#EF4444' },
             ].map((s) => (
@@ -526,10 +553,10 @@ const StudentProfileDrawer = ({ student, open, onClose }) => {
       children: loading.attend ? <Spin /> : Object.keys(attendStats).length ? (
         <Row gutter={12}>
           {[
-            { label: 'Total Days', value: attendStats.total || 0, color: '#1B3A5C' },
+            { label: 'Total Days', value: attendStats.total || 0, color: 'var(--color-primary-dark)' },
             { label: 'Present', value: attendStats.present || 0, color: '#22C55E' },
             { label: 'Absent', value: attendStats.absent || 0, color: '#EF4444' },
-            { label: 'Avg %', value: `${attendStats.percentage || 0}%`, color: '#3B82F6' },
+            { label: 'Avg %', value: `${attendStats.percentage || 0}%`, color: 'var(--color-secondary)' },
           ].map((s) => (
             <Col key={s.label} span={12} style={{ marginBottom: 8 }}>
               <Card size="small" bordered={false} style={{ background: '#F8FAFC', borderRadius: 8 }}>

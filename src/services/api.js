@@ -466,6 +466,10 @@ export const setupAPI = {
   // Payment Settings
   getPaymentSettings: () => api.get('/setup/payment-settings'),
   savePaymentSettings: (data) => api.put('/setup/payment-settings', data),
+
+  // Message Templates
+  getMessageTemplates: () => api.get('/setup/message-templates'),
+  saveMessageTemplates: (data) => api.put('/setup/message-templates', data),
 };
 
 // ─── Subjects ────────────────────────────────────────────────

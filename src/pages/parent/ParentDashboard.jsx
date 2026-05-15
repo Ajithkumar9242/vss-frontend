@@ -108,50 +108,19 @@ const ParentDashboard = () => {
 
   const summary = feeData?.summary;
   const feeConfigured = summary && summary.totalFee > 0;
-  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const quickLinks = [
-    { label: 'Pay Fees', icon: '₹', to: '/parent/fees', color: '#EFF6FF' },
+    { label: 'Pay Fees', icon: '₹', to: '/parent/fees', color: 'var(--color-primary-light)' },
     { label: 'Attendance', icon: '📅', to: '/parent/attendance', color: '#F0FDF4' },
     { label: 'Exam Results', icon: '📊', to: '/parent/exams', color: '#FFF7ED' },
     { label: 'Notifications', icon: '🔔', to: '/parent/notifications', color: '#FDF4FF' },
-    { label: 'Vault', icon: '📂', to: '/parent/vault', color: '#E0F2FE' },
+    { label: 'Vault', icon: '📂', to: '/parent/vault', color: 'var(--color-primary-light)' },
     { label: 'My Requests', icon: '🧾', to: '/parent/requests', color: '#FEF3C7' },
     { label: 'My Docs', icon: '⬇️', to: '/parent/documents', color: '#FCE7F3' },
   ];
 
   return (
     <ParentLayout title="Parent Portal" subtitle={`Welcome back, ${user?.name?.split(' ')[0] || 'Parent'}`}>
-
-      {/* Top Blue Header Row inside Page Content */}
-      <div style={{
-        background: '#2563EB', color: '#fff', padding: '16px', display: 'flex',
-        justifyContent: 'space-between', alignItems: 'center',
-        margin: '-16px -16px 16px -16px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ cursor: 'pointer' }}>
-          <span style={{ fontSize: '24px', lineHeight: '1' }}>☰</span>
-        </div>
-        <div style={{ fontWeight: '600', fontSize: '16px', textAlign: 'center', flex: 1 }}>
-          VSS International School
-        </div>
-        <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => navigate('/parent/notifications')}>
-          <span style={{ fontSize: '22px' }}>🔔</span>
-          {unreadCount > 0 ? (
-            <span style={{
-              position: 'absolute', top: -4, right: -4, background: '#EF4444', color: '#fff',
-              fontSize: '10px', fontWeight: 'bold', padding: '2px 6px', borderRadius: '10px'
-            }}>
-              {unreadCount}
-            </span>
-          ) : notifications.length > 0 ? (
-            <span style={{
-              position: 'absolute', top: 0, right: 0, width: 8, height: 8,
-              background: '#EF4444', borderRadius: '50%', border: '2px solid #2563EB'
-            }} />
-          ) : null}
-        </div>
-      </div>
 
       {loading && <div className="m-spinner" />}
 
@@ -175,7 +144,7 @@ const ParentDashboard = () => {
                     style={{
                       padding: '6px 14px', borderRadius: 20, border: 'none',
                       fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                      background: selectedChildIdx === idx ? '#2563EB' : '#E2E8F0',
+                      background: selectedChildIdx === idx ? 'var(--color-primary)' : '#E2E8F0',
                       color: selectedChildIdx === idx ? '#fff' : '#374151',
                       transition: 'all 0.2s',
                     }}
@@ -207,7 +176,7 @@ const ParentDashboard = () => {
             <button
               onClick={() => navigate('/parent/profile')}
               style={{
-                background: '#FFFFFF', color: '#2563EB', padding: '6px 16px',
+                background: '#FFFFFF', color: 'var(--color-primary)', padding: '6px 16px',
                 borderRadius: '9999px', fontSize: '12px', fontWeight: '600',
                 border: 'none', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
               }}
@@ -282,7 +251,7 @@ const ParentDashboard = () => {
                 <span className="m-section-title">🏠 Hostel Info</span>
               </div>
               {hostelInfo && hostelInfo.allocated ? (
-                <div className="m-card" style={{ borderLeft: '3px solid #2563EB', marginBottom: 10 }}>
+                <div className="m-card" style={{ borderLeft: '3px solid var(--color-primary)', marginBottom: 10 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                     <div>
                       <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 2 }}>Hostel / Block</div>
@@ -365,8 +334,8 @@ const ParentDashboard = () => {
                               <a
                                 key={fi} href={f.url} target="_blank" rel="noreferrer"
                                 style={{
-                                  fontSize: 12, color: '#2563EB', display: 'inline-flex', alignItems: 'center', gap: 4,
-                                  background: '#EFF6FF', padding: '5px 10px', borderRadius: 4, textDecoration: 'none',
+                                  fontSize: 12, color: 'var(--color-primary)', display: 'inline-flex', alignItems: 'center', gap: 4,
+                                  background: 'var(--color-primary-light)', padding: '5px 10px', borderRadius: 4, textDecoration: 'none',
                                 }}
                               >
                                 &#128196; {f.name || `View File ${fi + 1}`}
@@ -392,7 +361,7 @@ const ParentDashboard = () => {
               {notifications.map((n, i) => (
                 <div key={n._id || i} className={`m-notif-item${!n.isRead ? ' unread' : ''}`}
                   onClick={() => navigate('/parent/notifications')}>
-                  <div className="m-notif-dot" style={{ background: !n.isRead ? '#2563EB' : '#CBD5E1' }} />
+                  <div className="m-notif-dot" style={{ background: !n.isRead ? 'var(--color-primary)' : '#CBD5E1' }} />
                   <div>
                     <div className="m-notif-title">{n.title}</div>
                     <div className="m-notif-body">{n.message}</div>

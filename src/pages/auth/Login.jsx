@@ -46,7 +46,7 @@ const Login = () => {
 
         <div style={styles.portalGridTop}>
           <button type="button" style={{ ...styles.portalCard, ...styles.portalCardActive }}>
-            <div style={{ ...styles.portalIcon, background: 'linear-gradient(135deg, #1B3A5C, #2563EB)' }}>
+            <div style={{ ...styles.portalIcon, background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))' }}>
               <LockOutlined style={{ color: '#fff', fontSize: 20 }} />
             </div>
             <div style={styles.portalInfo}>
@@ -126,7 +126,7 @@ const Login = () => {
             onMouseEnter={e => Object.assign(e.currentTarget.style, styles.portalCardHover)}
             onMouseLeave={e => Object.assign(e.currentTarget.style, styles.portalCard)}
           >
-            <div style={{ ...styles.portalIcon, background: 'linear-gradient(135deg, #2563EB, #3B82F6)' }}>
+            <div style={{ ...styles.portalIcon, background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
               <MobileOutlined style={{ color: '#fff', fontSize: 20 }} />
             </div>
             <div style={styles.portalInfo}>
@@ -144,7 +144,7 @@ const Login = () => {
             onMouseEnter={e => Object.assign(e.currentTarget.style, styles.portalCardHover)}
             onMouseLeave={e => Object.assign(e.currentTarget.style, styles.portalCard)}
           >
-            <div style={{ ...styles.portalIcon, background: 'linear-gradient(135deg, #0F172A, #1E3A5F)' }}>
+            <div style={{ ...styles.portalIcon, background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary-dark))' }}>
               <UserOutlined style={{ color: '#fff', fontSize: 20 }} />
             </div>
             <div style={styles.portalInfo}>
@@ -173,7 +173,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0F172A 0%, #1E3A5F 50%, #1B3A5C 100%)',
+    background: 'linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-dark) 50%, var(--color-primary-dark) 100%)',
     padding: 16,
   },
   card: {
@@ -194,7 +194,7 @@ const styles = {
     width: 56,
     height: 56,
     borderRadius: 12,
-    background: 'linear-gradient(135deg, #1B3A5C, #2563EB)',
+    background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: 700,
@@ -234,8 +234,8 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 14,
-    background: '#EFF6FF',
-    border: '1px solid #BFDBFE',
+    background: 'var(--color-primary-light)',
+    border: '1px solid var(--color-primary-light)',
     borderRadius: 10,
     padding: '14px 16px',
     cursor: 'pointer',
@@ -243,12 +243,12 @@ const styles = {
     textAlign: 'left',
     transition: 'all 0.2s',
     transform: 'translateY(-1px)',
-    boxShadow: '0 4px 12px rgba(37,99,235,0.12)',
+    boxShadow: '0 4px 12px rgba(var(--color-primary-rgb),0.12)',
   },
   portalCardActive: {
-    background: '#EFF6FF',
+    background: 'var(--color-primary-light)',
     border: '1px solid #93C5FD',
-    boxShadow: '0 4px 12px rgba(37,99,235,0.10)',
+    boxShadow: '0 4px 12px rgba(var(--color-primary-rgb),0.10)',
   },
   portalIcon: {
     width: 40,

@@ -34,6 +34,7 @@ const SectionsPage = React.lazy(() => import('@/pages/setup/Sections'));
 const GradeSetupPage = React.lazy(() => import('@/pages/setup/GradeSetup'));
 const AttendanceConfigPage = React.lazy(() => import('@/pages/setup/AttendanceConfig'));
 const PaymentSettingsPage = React.lazy(() => import('@/pages/setup/PaymentSettings'));
+const MessageTemplatesPage = React.lazy(() => import('@/pages/setup/MessageTemplates'));
 const ClassGroupsPage = React.lazy(() => import('@/pages/setup/ClassGroups'));
 const SubjectsPage = React.lazy(() => import('@/pages/setup/Subjects'));
 const ClassConfigPage = React.lazy(() => import('@/pages/setup/ClassConfig'));
@@ -81,7 +82,7 @@ const ComingSoonPage = (title) => React.lazy(() =>
         fontFamily: "'Inter', sans-serif",
       }}>
         <div style={{ fontSize: 56 }}>🚧</div>
-        <h2 style={{ margin: 0, color: '#1B3A5C' }}>{title}</h2>
+        <h2 style={{ margin: 0, color: 'var(--color-primary-dark)' }}>{title}</h2>
         <p style={{ color: '#64748B', margin: 0 }}>This module is under development and will be available soon.</p>
       </div>
     ),
@@ -253,6 +254,8 @@ const AppRouter = () => (
             element={<RoleRoute roles={SETUP_ROLES}><AttendanceConfigPage /></RoleRoute>} />
           <Route path="/setup/payment-settings"
             element={<RoleRoute roles={SETUP_ROLES}><PaymentSettingsPage /></RoleRoute>} />
+          <Route path="/setup/message-templates"
+            element={<RoleRoute roles={SETUP_ROLES}><MessageTemplatesPage /></RoleRoute>} />
           <Route path="/setup/class-groups"
             element={<RoleRoute roles={SETUP_ROLES}><ClassGroupsPage /></RoleRoute>} />
           <Route path="/setup/subjects"
